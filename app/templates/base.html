@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}My Shop{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="{{ url_for('catalog.home') }}">My Shop</a>
+      <form class="search" action="{{ url_for('catalog.product_list') }}" method="get">
+        <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q','') }}">
+        <button type="submit">Search</button>
+      </form>
+      <nav>
+        <a href="{{ url_for('catalog.product_list') }}">All Products</a>
+        <a href="{{ url_for('cart.detail') }}">Cart ({{ cart_count }})</a>
+        {% if current_user.is_authenticated %}
+          <span>Hi, {{ current_user.username }}</span>
+          <a href="{{ url_for('auth.logout') }}">Logout</a>
+          <a href="{{ url_for('admin.index') }}">Admin</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Login</a>
+          <a href="{{ url_for('auth.register') }}">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <div class="flash">
+          {% for cat, msg in msgs %}
+            <div class="flash-{{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; {{  (namespace().year if false else "") }} My Shop</p>
+    </div>
+  </footer>
+</body>
+</html>

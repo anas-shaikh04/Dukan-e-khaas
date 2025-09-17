@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Checkout - My Shop{% endblock %}
+{% block content %}
+  <h1>Checkout</h1>
+  <h3>Order Summary</h3>
+  <ul>
+    {% for item in items %}
+      <li>{{ item.quantity }} x {{ item.product.name }} — ${{ '%.2f'|format(item.total_price) }}</li>
+    {% endfor %}
+  </ul>
+  <p><strong>Total: ${{ '%.2f'|format(total) }}</strong></p>
+  <hr>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    {{ form.first_name.label }} {{ form.first_name(size=32) }}<br>
+    {{ form.last_name.label }} {{ form.last_name(size=32) }}<br>
+    {{ form.email.label }} {{ form.email(size=32) }}<br>
+    {{ form.address.label }} {{ form.address(size=64) }}<br>
+    {{ form.city.label }} {{ form.city(size=32) }}<br>
+    {{ form.postal_code.label }} {{ form.postal_code(size=16) }}<br>
+    {{ form.payment_reference.label }} {{ form.payment_reference(size=32) }}<br><br>
+    {{ form.submit(class_="button") }}
+  </form>
+{% endblock %}

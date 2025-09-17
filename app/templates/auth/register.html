@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Register - My Shop{% endblock %}
+{% block content %}
+  <h1>Create an Account</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    {{ form.username.label }} {{ form.username(size=32) }}<br>
+    {{ form.email.label }} {{ form.email(size=32) }}<br>
+    {{ form.password.label }} {{ form.password(size=32) }}<br>
+    {{ form.confirm.label }} {{ form.confirm(size=32) }}<br><br>
+    {{ form.submit(class_="button") }}
+  </form>
+{% endblock %}

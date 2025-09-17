@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Products - My Shop{% endblock %}
+{% block content %}
+  <h1>Products</h1>
+
+  <form class="filters" method="get">
+    <input type="text" name="q" placeholder="Search..." value="{{ current_filters.q }}">
+    <select name="category">
+      <option value="">All Categories</option>
+      {% for c in categories %}
+        <option value="{{ c.slug }}" {% if current_filters.category == c.slug %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="number" name="min_price" placeholder="Min price" value="{{ current_filters.min_price }}" step="0.01">
+    <input type="number" name="max_price" placeholder="Max price" value="{{ current_filters.max_price }}" step="0.01">
+    <select name="sort">
+      <option value="">Sort by</option>
+      <option value="price_asc"  {% if current_filters.sort == "price_asc" %}selected{% endif %}>Price: Low to High</option>
+      <option value="price_desc" {% if current_filters.sort == "price_desc" %}selected{% endif %}>Price: High to Low</option>
+      <option value="name_asc"   {% if current_filters.sort == "name_asc" %}selected{% endif %}>Name: A-Z</option>
+      <option value="name_desc"  {% if current_filters.sort == "name_desc" %}selected{% endif %}>Name: Z-A</option>
+      <option value="newest"     {% if current_filters.sort == "newest" %}selected{% endif %}>Newest</option>
+      <option value="oldest"     {% if current_filters.sort == "oldest" %}selected{% endif %}>Oldest</option>
+    </select>
+    <button type="submit">Apply</button>
+  </form>
+
+  <div class="grid">
+    {% for p in products %}
+      <div class="card">
+        <a href="{{ url_for('catalog.product_detail', slug=p.slug) }}">
+          {% if p.images and p.images[0] %}
+            <img src="{{ p.images[0].image_url }}" alt="{{ p.images[0].alt_text }}">
+          {% endif %}
+          <h3>{{ p.name }}</h3>
+        </a>
+        <p>${{ '%.2f'|format(p.price) }}</p>
+        {% if p.stock > 0 %}
+          <form action="{{ url_for('cart.add') }}" method="post">
+            <input type="hidden" name="product_id" value="{{ p.id }}">
+            <input type="number" name="quantity" value="1" min="1" max="{{ p.stock }}" />
+            <button type="submit">Add to cart</button>
+          </form>
+        {% else %}
+          <p class="out-of-stock">Out of stock</p>
+        {% endif %}
+      </div>
+    {% else %}
+      <p>No products found.</p>
+    {% endfor %}
+  </div>
+
+  {% if pagination.pages > 1 %}
+    <div class="pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('catalog.product_list', page=pagination.prev_num, **current_filters) }}">Previous</a>
+      {% endif %}
+      <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+      {% if pagination.has_next %}
+        <a href="{{ url_for('catalog.product_list', page=pagination.next_num, **current_filters) }}">Next</a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}
